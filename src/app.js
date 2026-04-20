@@ -1,6 +1,7 @@
 import { analyzeSpeech } from "./analysis.js";
 
 const DRILL_TOPICS = [
+  // General speaking drills
   "Describe a product idea that solves a daily frustration.",
   "Explain a time you changed your mind after hearing new evidence.",
   "Pitch a community project you want to start this year.",
@@ -9,6 +10,24 @@ const DRILL_TOPICS = [
   "Describe how AI should be used responsibly in schools.",
   "Convince your audience to adopt one healthy daily habit.",
   "Explain a failure that taught you an important lesson.",
+  "If you could fix one problem in your city, what would it be and how?",
+  "Describe a skill you learned on your own and how it changed you.",
+  "Make the case for or against social media for teenagers.",
+  "Talk about someone who inspired you and why their story matters.",
+
+  // Philippine history
+  "Explain the significance of the Propaganda Movement and the role of Jose Rizal in awakening Philippine nationalism.",
+  "Describe the events of the Philippine Revolution of 1896 and why Andres Bonifacio is considered a hero of the masses.",
+  "Talk about the Philippine-American War and why it is often overlooked in history books.",
+  "Explain the impact of the Spanish colonial period on Philippine culture, religion, and identity.",
+  "Describe what the EDSA People Power Revolution of 1986 meant for democracy in the Philippines and Southeast Asia.",
+  "Who was Gabriela Silang and why is her legacy important to Filipino women today?",
+  "Explain the Cry of Pugad Lawin and how it sparked the Philippine Revolution.",
+  "Talk about the Bataan Death March and what it reveals about the cost of war for ordinary Filipinos.",
+  "Describe the Commonwealth period under Manuel Quezon and how it shaped the road to Philippine independence.",
+  "Explain the significance of June 12, 1898 — Philippine Independence Day — and what Emilio Aguinaldo proclaimed.",
+  "Talk about the Marcos martial law era: what led to it, how it affected Filipinos, and what lessons it carries.",
+  "Describe the role of the Katipunan as a secret revolutionary society and how it unified Filipinos against Spanish rule.",
 ];
 
 const topicText = document.getElementById("topicText");
