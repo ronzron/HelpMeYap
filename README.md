@@ -15,7 +15,7 @@ HelpMeYap is a lightweight speaking-drill web app inspired by SpeakUp-style coac
 
 ## Run locally
 
-Open `/home/runner/work/HelpMeYap/HelpMeYap/index.html` in a browser.
+Open `index.html` in a browser.
 
 ## Run tests
 
