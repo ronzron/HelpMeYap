@@ -8,6 +8,7 @@ const PAUSE_PENALTY_PER_MARKER = 3;
 const MAX_PAUSE_PENALTY = 20;
 const MAX_SENTENCE_WORDS = 28;
 const LONG_SENTENCE_PENALTY = 15;
+const MIN_DURATION_MINUTES = 1 / 60;
 
 const escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -15,6 +16,8 @@ const countWordOccurrences = (transcript, word) => {
   const pattern = new RegExp(`\\b${escapeRegex(word)}\\b`, "gi");
   return (transcript.match(pattern) || []).length;
 };
+
+const countWords = (text) => (text.match(/\b[\w']+\b/g) || []).length;
 
 export const analyzeSpeech = (transcript, durationSeconds = 90) => {
   const cleanTranscript = transcript.trim();
@@ -36,15 +39,15 @@ export const analyzeSpeech = (transcript, durationSeconds = 90) => {
   );
   const totalFillers = Object.values(fillerCounts).reduce((sum, count) => sum + count, 0);
 
-  const wordCount = (cleanTranscript.match(/\b[\w']+\b/g) || []).length;
+  const wordCount = countWords(cleanTranscript);
   const estimatedPauses = (cleanTranscript.match(/(\.\.\.|—|--|\[pause\])/gi) || []).length;
-  const minutes = Math.max(durationSeconds / 60, 1 / 60);
+  const minutes = Math.max(durationSeconds / 60, MIN_DURATION_MINUTES);
   const wordsPerMinute = Math.round(wordCount / minutes);
 
   const fillerPenalty = Math.min(totalFillers * FILLER_PENALTY_PER_WORD, MAX_FILLER_PENALTY);
   const pacePenalty = wordsPerMinute < LOW_WPM_THRESHOLD || wordsPerMinute > HIGH_WPM_THRESHOLD ? PACE_PENALTY : 0;
   const pausePenalty = Math.min(estimatedPauses * PAUSE_PENALTY_PER_MARKER, MAX_PAUSE_PENALTY);
-  const sentencePenalty = cleanTranscript.split(/[.!?]/).some((sentence) => sentence.trim().split(/\s+/).length > MAX_SENTENCE_WORDS)
+  const sentencePenalty = cleanTranscript.split(/[.!?]/).some((sentence) => countWords(sentence) > MAX_SENTENCE_WORDS)
     ? LONG_SENTENCE_PENALTY
     : 0;
 

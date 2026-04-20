@@ -19,5 +19,9 @@ test("analyzeSpeech detects pause markers", () => {
 test("analyzeSpeech returns guidance for empty transcript", () => {
   const result = analyzeSpeech("   ", 90);
   assert.equal(result.clarityScore, 0);
+  assert.equal(result.totalFillers, 0);
+  assert.equal(result.wordCount, 0);
+  assert.equal(result.estimatedPauses, 0);
+  assert.equal(result.wordsPerMinute, 0);
   assert.match(result.tips[0], /transcript/i);
 });
