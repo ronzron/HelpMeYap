@@ -1,6 +1,6 @@
 import { analyzeSpeech } from "./analysis.js";
 
-const TOPICS = [
+const DRILL_TOPICS = [
   "Describe a product idea that solves a daily frustration.",
   "Explain a time you changed your mind after hearing new evidence.",
   "Pitch a community project you want to start this year.",
@@ -31,18 +31,18 @@ let timerId = null;
 let recorder = null;
 let chunks = [];
 
-const toTimer = (seconds) => {
+const formatTimerDisplay = (seconds) => {
   const mins = String(Math.floor(seconds / 60)).padStart(2, "0");
   const secs = String(seconds % 60).padStart(2, "0");
   return `${mins}:${secs}`;
 };
 
 const renderTimer = () => {
-  timerDisplay.textContent = toTimer(remainingSeconds);
+  timerDisplay.textContent = formatTimerDisplay(remainingSeconds);
 };
 
 newTopicBtn.addEventListener("click", () => {
-  const nextTopic = TOPICS[Math.floor(Math.random() * TOPICS.length)];
+  const nextTopic = DRILL_TOPICS[Math.floor(Math.random() * DRILL_TOPICS.length)];
   topicText.textContent = nextTopic;
 });
 
@@ -103,7 +103,7 @@ startRecordBtn.addEventListener("click", async () => {
       }
     });
     recorder.addEventListener("stop", () => {
-      const audioBlob = new Blob(chunks, { type: "audio/webm" });
+      const audioBlob = new Blob(chunks, { type: recorder.mimeType || "audio/webm" });
       recordingPlayback.src = URL.createObjectURL(audioBlob);
       stream.getTracks().forEach((track) => track.stop());
       setRecordingState(false);

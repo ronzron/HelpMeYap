@@ -25,3 +25,9 @@ test("analyzeSpeech returns guidance for empty transcript", () => {
   assert.equal(result.wordsPerMinute, 0);
   assert.match(result.tips[0], /transcript/i);
 });
+
+test("analyzeSpeech applies long sentence clarity penalty", () => {
+  const longSentence = `${"word ".repeat(29)}.`.trim();
+  const result = analyzeSpeech(longSentence, 90);
+  assert.equal(result.clarityScore, 85);
+});

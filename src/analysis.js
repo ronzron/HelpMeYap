@@ -6,6 +6,7 @@ const HIGH_WPM_THRESHOLD = 180;
 const PACE_PENALTY = 20;
 const PAUSE_PENALTY_PER_MARKER = 3;
 const MAX_PAUSE_PENALTY = 20;
+// Sentences beyond ~28 words are often harder to follow in short speaking drills.
 const MAX_SENTENCE_WORDS = 28;
 const LONG_SENTENCE_PENALTY = 15;
 const MIN_DURATION_MINUTES = 1 / 60;
