@@ -1,4 +1,13 @@
 const FILLER_WORDS = ["um", "uh", "like", "you know", "actually", "basically", "literally", "so"];
+const FILLER_PENALTY_PER_WORD = 4;
+const MAX_FILLER_PENALTY = 45;
+const LOW_WPM_THRESHOLD = 100;
+const HIGH_WPM_THRESHOLD = 180;
+const PACE_PENALTY = 20;
+const PAUSE_PENALTY_PER_MARKER = 3;
+const MAX_PAUSE_PENALTY = 20;
+const MAX_SENTENCE_WORDS = 28;
+const LONG_SENTENCE_PENALTY = 15;
 
 const escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -29,13 +38,15 @@ export const analyzeSpeech = (transcript, durationSeconds = 90) => {
 
   const wordCount = (cleanTranscript.match(/\b[\w']+\b/g) || []).length;
   const estimatedPauses = (cleanTranscript.match(/(\.\.\.|—|--|\[pause\])/gi) || []).length;
-  const minutes = Math.max(durationSeconds, 1) / 60;
+  const minutes = Math.max(durationSeconds / 60, 1 / 60);
   const wordsPerMinute = Math.round(wordCount / minutes);
 
-  const fillerPenalty = Math.min(totalFillers * 4, 45);
-  const pacePenalty = wordsPerMinute < 100 || wordsPerMinute > 180 ? 20 : 0;
-  const pausePenalty = Math.min(estimatedPauses * 3, 20);
-  const sentencePenalty = cleanTranscript.split(/[.!?]/).some((sentence) => sentence.trim().split(/\s+/).length > 28) ? 15 : 0;
+  const fillerPenalty = Math.min(totalFillers * FILLER_PENALTY_PER_WORD, MAX_FILLER_PENALTY);
+  const pacePenalty = wordsPerMinute < LOW_WPM_THRESHOLD || wordsPerMinute > HIGH_WPM_THRESHOLD ? PACE_PENALTY : 0;
+  const pausePenalty = Math.min(estimatedPauses * PAUSE_PENALTY_PER_MARKER, MAX_PAUSE_PENALTY);
+  const sentencePenalty = cleanTranscript.split(/[.!?]/).some((sentence) => sentence.trim().split(/\s+/).length > MAX_SENTENCE_WORDS)
+    ? LONG_SENTENCE_PENALTY
+    : 0;
 
   const clarityScore = Math.max(0, 100 - fillerPenalty - sentencePenalty);
   const deliveryScore = Math.max(0, 100 - pacePenalty - pausePenalty);
@@ -47,9 +58,9 @@ export const analyzeSpeech = (transcript, durationSeconds = 90) => {
   if (estimatedPauses > 3) {
     tips.push("You pause often. Group ideas into shorter phrases to keep momentum.");
   }
-  if (wordsPerMinute < 100) {
+  if (wordsPerMinute < LOW_WPM_THRESHOLD) {
     tips.push("Your pace is slow. Practice emphasizing key words while slightly increasing speed.");
-  } else if (wordsPerMinute > 180) {
+  } else if (wordsPerMinute > HIGH_WPM_THRESHOLD) {
     tips.push("Your pace is fast. Add intentional pauses after each major point.");
   }
   if (tips.length === 0) {
