@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HelpMeYap</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>HelpMeYap</h1>
+      <p class="subtitle">Practice 1–2 minute speaking drills and get instant AI-style coaching.</p>
+
+      <section class="card">
+        <h2>Random topic</h2>
+        <p id="topicText">Click "New Topic" to begin.</p>
+        <button id="newTopicBtn" type="button">New Topic</button>
+      </section>
+
+      <section class="card">
+        <h2>Drill timer</h2>
+        <div class="row">
+          <label for="durationSelect">Duration</label>
+          <select id="durationSelect">
+            <option value="60">1:00</option>
+            <option value="90" selected>1:30</option>
+            <option value="120">2:00</option>
+          </select>
+        </div>
+        <p id="timerDisplay" class="timer">01:30</p>
+        <div class="row">
+          <button id="startTimerBtn" type="button">Start</button>
+          <button id="pauseTimerBtn" type="button">Pause</button>
+          <button id="resetTimerBtn" type="button">Reset</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Recording</h2>
+        <div class="row">
+          <button id="startRecordBtn" type="button">Start Recording</button>
+          <button id="stopRecordBtn" type="button" disabled>Stop Recording</button>
+        </div>
+        <p id="recordingStatus">Not recording</p>
+        <audio id="recordingPlayback" controls></audio>
+      </section>
+
+      <section class="card">
+        <h2>AI feedback</h2>
+        <label for="transcriptInput">Paste your transcript</label>
+        <textarea
+          id="transcriptInput"
+          rows="8"
+          placeholder="Paste what you said. Example: Um... I think we should start with the customer problem..."
+        ></textarea>
+        <div class="row">
+          <button id="analyzeBtn" type="button">Analyze Speech</button>
+        </div>
+        <div id="feedbackPanel" class="feedback"></div>
+      </section>
+    </main>
+
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>
