@@ -30,6 +30,9 @@ let remainingSeconds = Number(durationSelect.value);
 let timerId = null;
 let recorder = null;
 let chunks = [];
+let recognition = null;
+let finalTranscript = "";
+let interimTranscript = "";
 
 const formatTimerDisplay = (seconds) => {
   const mins = String(Math.floor(seconds / 60)).padStart(2, "0");
@@ -42,7 +45,8 @@ const renderTimer = () => {
 };
 
 newTopicBtn.addEventListener("click", () => {
-  const randomTopic = DRILL_TOPICS[Math.floor(Math.random() * DRILL_TOPICS.length)];
+  const randomTopic =
+    DRILL_TOPICS[Math.floor(Math.random() * DRILL_TOPICS.length)];
   topicText.textContent = randomTopic;
 });
 
@@ -85,7 +89,9 @@ resetTimerBtn.addEventListener("click", () => {
 const setRecordingState = (isRecording) => {
   startRecordBtn.disabled = isRecording;
   stopRecordBtn.disabled = !isRecording;
-  recordingStatus.textContent = isRecording ? "Recording..." : "Not recording";
+  if (isRecording) {
+    recordingStatus.textContent = "Recording...";
+  }
 };
 
 startRecordBtn.addEventListener("click", async () => {
@@ -103,15 +109,66 @@ startRecordBtn.addEventListener("click", async () => {
       }
     });
     recorder.addEventListener("stop", () => {
-      const audioBlob = new Blob(chunks, { type: recorder.mimeType || "audio/webm" });
+      const audioBlob = new Blob(chunks, {
+        type: recorder.mimeType || "audio/webm",
+      });
       recordingPlayback.src = URL.createObjectURL(audioBlob);
       stream.getTracks().forEach((track) => track.stop());
-      setRecordingState(false);
+
+      if (recognition) {
+        recognition.stop();
+        recognition = null;
+      }
+
+      const fullTranscript = (finalTranscript + " " + interimTranscript).trim();
+      startRecordBtn.disabled = false;
+      stopRecordBtn.disabled = true;
+
+      if (fullTranscript) {
+        transcriptInput.value = fullTranscript;
+        recordingStatus.textContent =
+          "Transcript ready — review and analyze below.";
+      } else {
+        recordingStatus.textContent = "Not recording";
+      }
     });
+
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = "en-US";
+      finalTranscript = "";
+      interimTranscript = "";
+
+      recognition.addEventListener("result", (event) => {
+        interimTranscript = "";
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript + " ";
+          } else {
+            interimTranscript += event.results[i][0].transcript;
+          }
+        }
+        recordingStatus.textContent = `Recording... "${(finalTranscript + interimTranscript).trim()}"`;
+      });
+
+      recognition.addEventListener("error", (event) => {
+        if (event.error !== "no-speech") {
+          console.warn("Speech recognition error:", event.error);
+        }
+      });
+
+      recognition.start();
+    }
+
     recorder.start();
     setRecordingState(true);
   } catch (error) {
-    recordingStatus.textContent = "Microphone permission denied or unavailable.";
+    recordingStatus.textContent =
+      "Microphone permission denied or unavailable.";
   }
 });
 
@@ -126,11 +183,16 @@ const listFillerCounts = (fillerCounts) => {
   if (entries.length === 0) {
     return "<li>No common filler words detected 🎉</li>";
   }
-  return entries.map(([word, count]) => `<li><strong>${word}</strong>: ${count}</li>`).join("");
+  return entries
+    .map(([word, count]) => `<li><strong>${word}</strong>: ${count}</li>`)
+    .join("");
 };
 
 analyzeBtn.addEventListener("click", () => {
-  const result = analyzeSpeech(transcriptInput.value, Number(durationSelect.value));
+  const result = analyzeSpeech(
+    transcriptInput.value,
+    Number(durationSelect.value),
+  );
   feedbackPanel.innerHTML = `
     <p><strong>Clarity score:</strong> ${result.clarityScore}/100</p>
     <p><strong>Delivery score:</strong> ${result.deliveryScore}/100</p>
