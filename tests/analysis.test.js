@@ -31,3 +31,9 @@ test("analyzeSpeech applies long sentence clarity penalty", () => {
   const result = analyzeSpeech(longSentence, 90);
   assert.equal(result.clarityScore, 85);
 });
+
+test("analyzeSpeech does not penalize sentence length at threshold", () => {
+  const thresholdSentence = `${"word ".repeat(28)}.`.trim();
+  const result = analyzeSpeech(thresholdSentence, 90);
+  assert.equal(result.clarityScore, 100);
+});

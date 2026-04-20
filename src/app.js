@@ -42,8 +42,8 @@ const renderTimer = () => {
 };
 
 newTopicBtn.addEventListener("click", () => {
-  const nextTopic = DRILL_TOPICS[Math.floor(Math.random() * DRILL_TOPICS.length)];
-  topicText.textContent = nextTopic;
+  const randomTopic = DRILL_TOPICS[Math.floor(Math.random() * DRILL_TOPICS.length)];
+  topicText.textContent = randomTopic;
 });
 
 durationSelect.addEventListener("change", () => {

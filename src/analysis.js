@@ -48,6 +48,7 @@ export const analyzeSpeech = (transcript, durationSeconds = 90) => {
   const fillerPenalty = Math.min(totalFillers * FILLER_PENALTY_PER_WORD, MAX_FILLER_PENALTY);
   const pacePenalty = wordsPerMinute < LOW_WPM_THRESHOLD || wordsPerMinute > HIGH_WPM_THRESHOLD ? PACE_PENALTY : 0;
   const pausePenalty = Math.min(estimatedPauses * PAUSE_PENALTY_PER_MARKER, MAX_PAUSE_PENALTY);
+  // A single extra-long sentence can significantly reduce short-form speech clarity.
   const sentencePenalty = cleanTranscript.split(/[.!?]/).some((sentence) => countWords(sentence) > MAX_SENTENCE_WORDS)
     ? LONG_SENTENCE_PENALTY
     : 0;
